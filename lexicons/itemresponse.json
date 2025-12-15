@@ -1,0 +1,67 @@
+{
+  "lexicon": 1,
+  "id": "irt.example.com",
+  "defs": {
+    "test": {
+      "type": "record",
+      "description": "A test definition (metadata only).",
+      "required": ["id", "title", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Unique identifier for the test."
+        },
+        "title": { "type": "string", "description": "Human-readable title." },
+        "description": { "type": "string", "description": "Brief description of the test." },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tags for categorization (e.g., ['math', 'algebra'])."
+        },
+        "createdAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "question": {
+      "type": "record",
+      "description": "A question reference (content not federated).",
+      "required": ["id", "testId"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Unique identifier for the question."
+        },
+        "testId": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Reference to the test this question belongs to."
+        }
+      }
+    },
+    "response": {
+      "type": "record",
+      "description": "A user's response to a question.",
+      "required": ["user", "questionId", "testId", "isCorrect"],
+      "properties": {
+        "user": {
+          "type": "string",
+          "format": "did",
+          "description": "DID of the user who answered."
+        },
+        "questionId": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Reference to the question."
+        },
+        "testId": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Reference to the test."
+        },
+        "isCorrect": { "type": "boolean", "description": "Whether the answer was correct." },
+        "timestamp": { "type": "string", "format": "datetime" }
+      }
+    }
+  }
+}

@@ -12,30 +12,35 @@
           "format": "at-identifier",
           "description": "Unique identifier for the test."
         },
-        "title": { "type": "string", "description": "Human-readable title." },
-        "description": { "type": "string", "description": "Brief description of the test." },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title of the test."
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the test."
+        },
         "tags": {
           "type": "array",
           "items": { "type": "string" },
           "description": "Tags for categorization (e.g., ['math', 'algebra'])."
         },
-        "createdAt": { "type": "string", "format": "datetime" }
+        "createdAt": {
+          "type": "string",
+          "format": "datetime",
+          "description": "When the test was created."
+        }
       }
     },
     "question": {
       "type": "record",
-      "description": "A question reference (content not federated).",
-      "required": ["id", "testId", "questionType"],
+      "description": "A reusable question (content not federated).",
+      "required": ["id", "questionType"],
       "properties": {
         "id": {
           "type": "string",
           "format": "at-identifier",
           "description": "Unique identifier for the question."
-        },
-        "testId": {
-          "type": "string",
-          "format": "at-identifier",
-          "description": "Reference to the test this question belongs to."
         },
         "questionType": {
           "type": "string",
@@ -49,9 +54,26 @@
         }
       }
     },
+    "testQuestion": {
+      "type": "record",
+      "description": "Links a question to a test (like a deck).",
+      "required": ["testId", "questionId"],
+      "properties": {
+        "testId": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Reference to the test."
+        },
+        "questionId": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Reference to the question."
+        }
+      }
+    },
     "response": {
       "type": "record",
-      "description": "A user's response to a question.",
+      "description": "A user's response to a question in a test.",
       "required": ["user", "questionId", "testId", "isCorrect"],
       "properties": {
         "user": {
@@ -69,12 +91,19 @@
           "format": "at-identifier",
           "description": "Reference to the test."
         },
-        "isCorrect": { "type": "boolean", "description": "Whether the answer was correct." },
+        "isCorrect": {
+          "type": "boolean",
+          "description": "Whether the answer was correct."
+        },
         "selectedOption": {
           "type": "string",
           "description": "For multiple-choice questions: the ID of the selected option (e.g., 'opt2')."
         },
-        "timestamp": { "type": "string", "format": "datetime" }
+        "timestamp": {
+          "type": "string",
+          "format": "datetime",
+          "description": "When the response was recorded."
+        }
       }
     }
   }

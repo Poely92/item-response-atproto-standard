@@ -25,7 +25,7 @@
     "question": {
       "type": "record",
       "description": "A question reference (content not federated).",
-      "required": ["id", "testId"],
+      "required": ["id", "testId", "questionType"],
       "properties": {
         "id": {
           "type": "string",
@@ -36,6 +36,16 @@
           "type": "string",
           "format": "at-identifier",
           "description": "Reference to the test this question belongs to."
+        },
+        "questionType": {
+          "type": "string",
+          "enum": ["open", "multipleChoice"],
+          "description": "Type of question: 'open' (free response) or 'multipleChoice'."
+        },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "For multiple-choice questions: list of option IDs (e.g., ['opt1', 'opt2']). Actual option text is NOT federated."
         }
       }
     },
@@ -60,6 +70,10 @@
           "description": "Reference to the test."
         },
         "isCorrect": { "type": "boolean", "description": "Whether the answer was correct." },
+        "selectedOption": {
+          "type": "string",
+          "description": "For multiple-choice questions: the ID of the selected option (e.g., 'opt2')."
+        },
         "timestamp": { "type": "string", "format": "datetime" }
       }
     }

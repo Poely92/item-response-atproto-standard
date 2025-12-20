@@ -2,23 +2,23 @@
   "lexicon": 1,
   "id": "irt.example.com",
   "defs": {
-    "test": {
+    "QuestionBank": {
       "type": "record",
-      "description": "A test definition (metadata only).",
-      "required": ["id", "title", "description"],
+      "description": "A test (deck) definition, including metadata and item ordering.",
+      "required": ["id", "title", "description", "itemOrder"],
       "properties": {
         "id": {
           "type": "string",
           "format": "at-identifier",
-          "description": "Unique identifier for the test."
+          "description": "Unique identifier for the test (deck). Example: 'at://irt.example.com/test/1'."
         },
         "title": {
           "type": "string",
-          "description": "Human-readable title of the test."
+          "description": "Human-readable title of the test (deck)."
         },
         "description": {
           "type": "string",
-          "description": "Brief description of the test."
+          "description": "Brief description of the test (deck)."
         },
         "tags": {
           "type": "array",
@@ -28,86 +28,98 @@
         "createdAt": {
           "type": "string",
           "format": "datetime",
-          "description": "When the test was created."
+          "description": "When the test (deck) was created."
         },
-        "reference": {
+        "itemOrder": {
           "type": "string",
-          "format": "at-identifier",
-          "description": "Optional reference to related ATProto content (e.g., a Bluesky post, WhiteWind video, or other record). Example: 'at://did:plc:abc123/app.bsky.feed.post/456def'."
+          "description": "Ordering of items (questions) in the test. Comma-separated groups are unordered; semicolon-separated groups are ordered. Example: 'item1,item2;item3' means item1 and item2 can appear in any order, but item3 must come after them."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the test (deck) is public (true) or private/encrypted (false)."
+        },
+        "author": {
+          "type": "string",
+          "format": "did",
+          "description": "DID of the author/creator of the test (deck)."
         }
       }
     },
-    "question": {
+    "item": {
       "type": "record",
-      "description": "A reusable question (content not federated).",
-      "required": ["id", "questionType"],
+      "description": "A reusable item (formerly 'question') in IRT terminology. Can be open-ended, multiple-choice, or AI-graded.",
+      "required": ["id", "itemType", "prompt", "correctAnswers"],
       "properties": {
         "id": {
           "type": "string",
           "format": "at-identifier",
-          "description": "Unique identifier for the question."
+          "description": "Unique identifier for the item. Example: 'at://irt.example.com/item/1'."
         },
-        "questionType": {
+        "prompt": {
           "type": "string",
-          "enum": ["open", "multipleChoice"],
-          "description": "Type of question: 'open' (free response) or 'multipleChoice'."
+          "description": "The actual text/prompt of the item (e.g., 'What is the capital of France?')."
         },
-        "options": {
+        "correctAnswers": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "For multiple-choice questions: list of option IDs (e.g., ['opt1', 'opt2']). Actual option text is NOT federated."
+          "description": "Correct answer(s) for the item. "
+        },
+        "deflectors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Incorrect options for 'multipleChoice' items (deflectors). If present, the item is automatically 'multipleChoice'."
         },
         "reference": {
-          "type": "string",
-          "format": "at-identifier",
-          "description": "Optional reference to related ATProto content (e.g., a Bluesky post, WhiteWind video, or other record). Example: 'at://did:plc:abc123/app.bsky.feed.post/456def'."
-        }
-      }
-    },
-    "testQuestion": {
-      "type": "record",
-      "description": "Links a question to a test (like a deck).",
-      "required": ["testId", "questionId"],
-      "properties": {
-        "testId": {
-          "type": "string",
-          "format": "at-identifier",
-          "description": "Reference to the test."
-        },
-        "questionId": {
-          "type": "string",
-          "format": "at-identifier",
-          "description": "Reference to the question."
+          "type": "object",
+          "description": "Structured reference to related ATProto content.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["bluesky/post", "bluesky/video", "whitewind/video", "other"],
+              "description": "Type of ATProto content."
+            },
+            "uri": {
+              "type": "string",
+              "format": "at-identifier",
+              "description": "URI of the ATProto content."
+            },
+          }
         }
       }
     },
     "response": {
       "type": "record",
-      "description": "A user's response to a question in a test.",
-      "required": ["user", "questionId", "testId", "isCorrect"],
+      "description": "A user's response to an item in a test (deck).",
+      "required": ["id", "user", "itemId", "testId", "response", "isCorrect"],
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "at-identifier",
+          "description": "Unique identifier for the response."
+        },
         "user": {
           "type": "string",
           "format": "did",
-          "description": "DID of the user who answered."
+          "description": "DID of the user who responded."
         },
-        "questionId": {
+        "itemId": {
           "type": "string",
           "format": "at-identifier",
-          "description": "Reference to the question."
+          "description": "Reference to the item (question)."
         },
         "testId": {
           "type": "string",
           "format": "at-identifier",
-          "description": "Reference to the test."
+          "description": "Reference to the test (deck)."
+        },
+        "response": {
+          "type": "string",
+          "description": "User's exact response (text or selected option ID)."
         },
         "isCorrect": {
           "type": "boolean",
-          "description": "Whether the answer was correct."
+          "description": "Whether the response was correct."
         },
-        "selectedOption": {
-          "type": "string",
-          "description": "For multiple-choice questions: the ID of the selected option (e.g., 'opt2')."
         },
         "timestamp": {
           "type": "string",
@@ -115,6 +127,5 @@
           "description": "When the response was recorded."
         }
       }
-    }
-  }
+    },
 }
